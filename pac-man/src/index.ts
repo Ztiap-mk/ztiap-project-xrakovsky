@@ -2,4 +2,4 @@ import { Game } from "./Game/Game";
 
 const game = new Game();
 
-game.start();
+game.start().catch(err => console.error(err));
