@@ -18,7 +18,7 @@ export class ResourceManager {
     }
 
 
-    private getImage(imgName: string) {
+    public getImage(imgName: string) {
         const img = this.loadedImages.get(imgName);
         if(!img) {
             throw console.error("Obrázok " + imgName + " sa nenašiel.");

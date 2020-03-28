@@ -1,3 +1,4 @@
+import { stateManager } from "./StateManager/StateManager";
 
 export class Game {
     protected canvas: HTMLCanvasElement;
@@ -15,6 +16,11 @@ export class Game {
     }
 
     public async start() {
+        try {
+            stateManager.start()
+        } catch (err) {
+            console.error(err);
+        }
         await this.initialize();
     }
 

@@ -117,7 +117,13 @@ parcelRequire = (function (modules, cache, entry, globalName) {
   }
 
   return newRequire;
-})({"Game/Game.ts":[function(require,module,exports) {
+})({"Assets/img/pac-man.png":[function(require,module,exports) {
+module.exports = "/pac-man.a3c0084f.png";
+},{}],"Assets/img/*.png":[function(require,module,exports) {
+module.exports = {
+  "pac-man": require("./pac-man.png")
+};
+},{"./pac-man.png":"Assets/img/pac-man.png"}],"Game/ResourceManager/ResourceManager.ts":[function(require,module,exports) {
 "use strict";
 
 var __awaiter = this && this.__awaiter || function (thisArg, _arguments, P, generator) {
@@ -267,6 +273,613 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var images = require("../../Assets/img/*.png");
+
+var IMAGES = [{
+  name: "pac-man",
+  src: "pac-man.png"
+}];
+
+var ResourceManager =
+/** @class */
+function () {
+  function ResourceManager() {
+    this.loadedImages = new Map();
+  }
+
+  ResourceManager.prototype.loadAssets = function () {
+    return __awaiter(this, void 0, void 0, function () {
+      return __generator(this, function (_a) {
+        switch (_a.label) {
+          case 0:
+            return [4
+            /*yield*/
+            , this.loadImages()];
+
+          case 1:
+            _a.sent();
+
+            return [2
+            /*return*/
+            ];
+        }
+      });
+    });
+  };
+
+  ResourceManager.prototype.getImage = function (imgName) {
+    var img = this.loadedImages.get(imgName);
+
+    if (!img) {
+      throw console.error("Obrázok " + imgName + " sa nenašiel.");
+    }
+
+    return img;
+  };
+
+  ResourceManager.prototype.loadImages = function () {
+    return __awaiter(this, void 0, void 0, function () {
+      var _this = this;
+
+      return __generator(this, function (_a) {
+        switch (_a.label) {
+          case 0:
+            return [4
+            /*yield*/
+            , Promise.all(IMAGES.map(function (image) {
+              return _this.loadImage(image);
+            }))];
+
+          case 1:
+            _a.sent();
+
+            return [2
+            /*return*/
+            ];
+        }
+      });
+    });
+  };
+
+  ResourceManager.prototype.loadImage = function (imgRes) {
+    return __awaiter(this, void 0, void 0, function () {
+      var _this = this;
+
+      return __generator(this, function (_a) {
+        return [2
+        /*return*/
+        , new Promise(function (resolve) {
+          var img = new Image();
+          img.src = images[imgRes.name];
+
+          img.onload = function () {
+            _this.loadedImages.set(imgRes.name, img);
+          };
+        })];
+      });
+    });
+  };
+
+  return ResourceManager;
+}();
+
+exports.ResourceManager = ResourceManager;
+exports.resourceManager = new ResourceManager();
+},{"../../Assets/img/*.png":"Assets/img/*.png"}],"Game/StateManager/State.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var State =
+/** @class */
+function () {
+  function State() {
+    this.objects = [];
+  }
+
+  State.prototype.render = function (context) {
+    this.objects.forEach(function (object) {
+      return object.render(context);
+    });
+  };
+
+  return State;
+}();
+
+exports.State = State;
+},{}],"Game/ObjectManager/Objects.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var Objects =
+/** @class */
+function () {
+  function Objects(x, y, width, height) {
+    this.x = x;
+    this.y = y;
+    this.width = width;
+    this.height = height;
+  }
+
+  Objects.prototype.render = function (context) {
+    context.fillRect(0, 0, this.width, this.height);
+  };
+
+  return Objects;
+}();
+
+exports.Objects = Objects;
+},{}],"Game/ObjectManager/DrawObject.ts":[function(require,module,exports) {
+"use strict";
+
+var __extends = this && this.__extends || function () {
+  var _extendStatics = function extendStatics(d, b) {
+    _extendStatics = Object.setPrototypeOf || {
+      __proto__: []
+    } instanceof Array && function (d, b) {
+      d.__proto__ = b;
+    } || function (d, b) {
+      for (var p in b) {
+        if (b.hasOwnProperty(p)) d[p] = b[p];
+      }
+    };
+
+    return _extendStatics(d, b);
+  };
+
+  return function (d, b) {
+    _extendStatics(d, b);
+
+    function __() {
+      this.constructor = d;
+    }
+
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+  };
+}();
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var Objects_1 = require("./Objects");
+
+var DrawObjects =
+/** @class */
+function (_super) {
+  __extends(DrawObjects, _super);
+
+  function DrawObjects(x, y, width, heigth, image) {
+    var _this = _super.call(this, x, y, width, heigth) || this;
+
+    _this.image = image;
+    return _this;
+  }
+
+  DrawObjects.prototype.render = function (context) {
+    context.drawImage(this.image, this.x, this.y, this.width, this.height);
+  };
+
+  return DrawObjects;
+}(Objects_1.Objects);
+
+exports.DrawObjects = DrawObjects;
+},{"./Objects":"Game/ObjectManager/Objects.ts"}],"Game/StateManager/MainMenuState.ts":[function(require,module,exports) {
+"use strict";
+
+var __extends = this && this.__extends || function () {
+  var _extendStatics = function extendStatics(d, b) {
+    _extendStatics = Object.setPrototypeOf || {
+      __proto__: []
+    } instanceof Array && function (d, b) {
+      d.__proto__ = b;
+    } || function (d, b) {
+      for (var p in b) {
+        if (b.hasOwnProperty(p)) d[p] = b[p];
+      }
+    };
+
+    return _extendStatics(d, b);
+  };
+
+  return function (d, b) {
+    _extendStatics(d, b);
+
+    function __() {
+      this.constructor = d;
+    }
+
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+  };
+}();
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var State_1 = require("./State");
+
+var DrawObject_1 = require("../ObjectManager/DrawObject");
+
+var ResourceManager_1 = require("../ResourceManager/ResourceManager");
+
+var MainMenuState =
+/** @class */
+function (_super) {
+  __extends(MainMenuState, _super);
+
+  function MainMenuState() {
+    var _this = _super.call(this) || this;
+
+    _this.objects = [new DrawObject_1.DrawObjects(200, 300, 40, 40, ResourceManager_1.resourceManager.getImage("pac-man"))];
+    return _this;
+  }
+
+  return MainMenuState;
+}(State_1.State);
+
+exports.MainMenuState = MainMenuState;
+},{"./State":"Game/StateManager/State.ts","../ObjectManager/DrawObject":"Game/ObjectManager/DrawObject.ts","../ResourceManager/ResourceManager":"Game/ResourceManager/ResourceManager.ts"}],"Game/StateManager/StateManager.ts":[function(require,module,exports) {
+"use strict";
+
+var __awaiter = this && this.__awaiter || function (thisArg, _arguments, P, generator) {
+  function adopt(value) {
+    return value instanceof P ? value : new P(function (resolve) {
+      resolve(value);
+    });
+  }
+
+  return new (P || (P = Promise))(function (resolve, reject) {
+    function fulfilled(value) {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    }
+
+    function rejected(value) {
+      try {
+        step(generator["throw"](value));
+      } catch (e) {
+        reject(e);
+      }
+    }
+
+    function step(result) {
+      result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
+    }
+
+    step((generator = generator.apply(thisArg, _arguments || [])).next());
+  });
+};
+
+var __generator = this && this.__generator || function (thisArg, body) {
+  var _ = {
+    label: 0,
+    sent: function sent() {
+      if (t[0] & 1) throw t[1];
+      return t[1];
+    },
+    trys: [],
+    ops: []
+  },
+      f,
+      y,
+      t,
+      g;
+  return g = {
+    next: verb(0),
+    "throw": verb(1),
+    "return": verb(2)
+  }, typeof Symbol === "function" && (g[Symbol.iterator] = function () {
+    return this;
+  }), g;
+
+  function verb(n) {
+    return function (v) {
+      return step([n, v]);
+    };
+  }
+
+  function step(op) {
+    if (f) throw new TypeError("Generator is already executing.");
+
+    while (_) {
+      try {
+        if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+        if (y = 0, t) op = [op[0] & 2, t.value];
+
+        switch (op[0]) {
+          case 0:
+          case 1:
+            t = op;
+            break;
+
+          case 4:
+            _.label++;
+            return {
+              value: op[1],
+              done: false
+            };
+
+          case 5:
+            _.label++;
+            y = op[1];
+            op = [0];
+            continue;
+
+          case 7:
+            op = _.ops.pop();
+
+            _.trys.pop();
+
+            continue;
+
+          default:
+            if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) {
+              _ = 0;
+              continue;
+            }
+
+            if (op[0] === 3 && (!t || op[1] > t[0] && op[1] < t[3])) {
+              _.label = op[1];
+              break;
+            }
+
+            if (op[0] === 6 && _.label < t[1]) {
+              _.label = t[1];
+              t = op;
+              break;
+            }
+
+            if (t && _.label < t[2]) {
+              _.label = t[2];
+
+              _.ops.push(op);
+
+              break;
+            }
+
+            if (t[2]) _.ops.pop();
+
+            _.trys.pop();
+
+            continue;
+        }
+
+        op = body.call(thisArg, _);
+      } catch (e) {
+        op = [6, e];
+        y = 0;
+      } finally {
+        f = t = 0;
+      }
+    }
+
+    if (op[0] & 5) throw op[1];
+    return {
+      value: op[0] ? op[1] : void 0,
+      done: true
+    };
+  }
+};
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var ResourceManager_1 = require("../ResourceManager/ResourceManager");
+
+var MainMenuState_1 = require("./MainMenuState");
+
+var StateManager =
+/** @class */
+function () {
+  function StateManager() {
+    this.possibleStates = {};
+  }
+
+  StateManager.prototype.start = function () {
+    return __awaiter(this, void 0, void 0, function () {
+      return __generator(this, function (_a) {
+        switch (_a.label) {
+          case 0:
+            return [4
+            /*yield*/
+            , ResourceManager_1.resourceManager.loadAssets()];
+
+          case 1:
+            _a.sent();
+
+            this.possibleStates = {
+              mainMenuState: new MainMenuState_1.MainMenuState()
+            };
+            this.currentState = this.possibleStates.mainMenuState;
+            return [2
+            /*return*/
+            ];
+        }
+      });
+    });
+  };
+
+  StateManager.prototype.changeCurrentState = function (state) {
+    var newState = this.possibleStates[state];
+
+    if (!newState) {
+      throw console.error("Zvolené štádium " + state + " neexistuje");
+    }
+
+    this.currentState = newState;
+  };
+
+  StateManager.prototype.render = function (context) {
+    this.currentState.render();
+  };
+
+  return StateManager;
+}();
+
+exports.StateManager = StateManager;
+exports.stateManager = new StateManager();
+},{"../ResourceManager/ResourceManager":"Game/ResourceManager/ResourceManager.ts","./MainMenuState":"Game/StateManager/MainMenuState.ts"}],"Game/Game.ts":[function(require,module,exports) {
+"use strict";
+
+var __awaiter = this && this.__awaiter || function (thisArg, _arguments, P, generator) {
+  function adopt(value) {
+    return value instanceof P ? value : new P(function (resolve) {
+      resolve(value);
+    });
+  }
+
+  return new (P || (P = Promise))(function (resolve, reject) {
+    function fulfilled(value) {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    }
+
+    function rejected(value) {
+      try {
+        step(generator["throw"](value));
+      } catch (e) {
+        reject(e);
+      }
+    }
+
+    function step(result) {
+      result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
+    }
+
+    step((generator = generator.apply(thisArg, _arguments || [])).next());
+  });
+};
+
+var __generator = this && this.__generator || function (thisArg, body) {
+  var _ = {
+    label: 0,
+    sent: function sent() {
+      if (t[0] & 1) throw t[1];
+      return t[1];
+    },
+    trys: [],
+    ops: []
+  },
+      f,
+      y,
+      t,
+      g;
+  return g = {
+    next: verb(0),
+    "throw": verb(1),
+    "return": verb(2)
+  }, typeof Symbol === "function" && (g[Symbol.iterator] = function () {
+    return this;
+  }), g;
+
+  function verb(n) {
+    return function (v) {
+      return step([n, v]);
+    };
+  }
+
+  function step(op) {
+    if (f) throw new TypeError("Generator is already executing.");
+
+    while (_) {
+      try {
+        if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+        if (y = 0, t) op = [op[0] & 2, t.value];
+
+        switch (op[0]) {
+          case 0:
+          case 1:
+            t = op;
+            break;
+
+          case 4:
+            _.label++;
+            return {
+              value: op[1],
+              done: false
+            };
+
+          case 5:
+            _.label++;
+            y = op[1];
+            op = [0];
+            continue;
+
+          case 7:
+            op = _.ops.pop();
+
+            _.trys.pop();
+
+            continue;
+
+          default:
+            if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) {
+              _ = 0;
+              continue;
+            }
+
+            if (op[0] === 3 && (!t || op[1] > t[0] && op[1] < t[3])) {
+              _.label = op[1];
+              break;
+            }
+
+            if (op[0] === 6 && _.label < t[1]) {
+              _.label = t[1];
+              t = op;
+              break;
+            }
+
+            if (t && _.label < t[2]) {
+              _.label = t[2];
+
+              _.ops.push(op);
+
+              break;
+            }
+
+            if (t[2]) _.ops.pop();
+
+            _.trys.pop();
+
+            continue;
+        }
+
+        op = body.call(thisArg, _);
+      } catch (e) {
+        op = [6, e];
+        y = 0;
+      } finally {
+        f = t = 0;
+      }
+    }
+
+    if (op[0] & 5) throw op[1];
+    return {
+      value: op[0] ? op[1] : void 0,
+      done: true
+    };
+  }
+};
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var StateManager_1 = require("./StateManager/StateManager");
+
 var Game =
 /** @class */
 function () {
@@ -286,6 +899,12 @@ function () {
       return __generator(this, function (_a) {
         switch (_a.label) {
           case 0:
+            try {
+              StateManager_1.stateManager.start();
+            } catch (err) {
+              console.error(err);
+            }
+
             return [4
             /*yield*/
             , this.initialize()];
@@ -317,7 +936,7 @@ function () {
 }();
 
 exports.Game = Game;
-},{}],"index.ts":[function(require,module,exports) {
+},{"./StateManager/StateManager":"Game/StateManager/StateManager.ts"}],"index.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -358,7 +977,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "41435" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "45881" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
