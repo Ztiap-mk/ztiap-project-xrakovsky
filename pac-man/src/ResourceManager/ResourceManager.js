@@ -1,7 +1,7 @@
 const images = require("../Assets/img/*.png");
 
 const IMAGES = [
-    {name: "", src: ""},
+    {name: "pac-man", src: "pac-man.png"},
 ];
 
 class ResourceManager {

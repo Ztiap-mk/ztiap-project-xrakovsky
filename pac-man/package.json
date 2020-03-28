@@ -8,7 +8,7 @@
     "webpack-cli": "^3.3.11"
   },
   "devDependencies": {
-    "javascript": "1.0.0"
+  
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
