@@ -904,7 +904,158 @@ function () {
 }();
 
 exports.Ghost = Ghost;
-},{"../CanvasInit":"Game/CanvasInit.ts","../../index":"index.ts"}],"index.ts":[function(require,module,exports) {
+},{"../CanvasInit":"Game/CanvasInit.ts","../../index":"index.ts"}],"States/MainMenu.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var CanvasInit_1 = require("../Game/CanvasInit");
+
+var __1 = require("..");
+
+var MainMenuState =
+/** @class */
+function () {
+  function MainMenuState() {
+    this.mainCanvas = new CanvasInit_1.CanvasInit();
+    this.canvas = this.mainCanvas.canvas;
+    this.ctx = this.mainCanvas.canvas.getContext("2d");
+  }
+
+  MainMenuState.prototype.initMenu = function () {
+    this.clear();
+    this.ctx.fillStyle = "black";
+    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    this.getText();
+    this.handleText();
+  };
+
+  MainMenuState.prototype.getText = function () {
+    this.createText("Start Game", this.canvas.width / 2, this.canvas.height / 2, "center", "yellow", "30px Ariel");
+    this.createText("Instructions", this.canvas.width / 2, this.canvas.height / 2 + 50, "center", "white", "30px Ariel");
+  };
+
+  MainMenuState.prototype.handleText = function () {
+    var _this = this;
+
+    window.addEventListener("click", function (e) {
+      var width = _this.canvas.width / 2;
+      var height = _this.canvas.height / 2;
+
+      var mousePos = _this.getMousePosition(_this.canvas, e);
+
+      if (mousePos.x >= width - 60 && mousePos.x <= width + 60 && mousePos.y >= height - 20 && mousePos.y <= height) {
+        _this.clear();
+
+        __1.start();
+      } else if (mousePos.x >= width - 60 && mousePos.x <= width + 60 && mousePos.y >= height + 20 && mousePos.y <= height + 60) {
+        _this.clear();
+
+        __1.instructions();
+      }
+    });
+  };
+
+  MainMenuState.prototype.getMousePosition = function (canvas, e) {
+    var rect = canvas.getBoundingClientRect();
+    return {
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top
+    };
+  };
+
+  MainMenuState.prototype.createText = function (text, x, y, align, color, font) {
+    this.ctx.fillStyle = color;
+    this.ctx.font = font;
+    this.ctx.textAlign = align;
+    this.ctx.fillText(text, x, y);
+  };
+
+  MainMenuState.prototype.clear = function () {
+    this.ctx.clearRect(0, 0, this.mainCanvas.canvas.width, this.mainCanvas.canvas.height);
+  };
+
+  return MainMenuState;
+}();
+
+exports.MainMenuState = MainMenuState;
+},{"../Game/CanvasInit":"Game/CanvasInit.ts","..":"index.ts"}],"States/Instructions.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var CanvasInit_1 = require("../Game/CanvasInit");
+
+var MainMenu_1 = require("./MainMenu");
+
+var Instructions =
+/** @class */
+function () {
+  function Instructions() {
+    this.mainCanvas = new CanvasInit_1.CanvasInit();
+    this.canvas = this.mainCanvas.canvas;
+    this.ctx = this.mainCanvas.canvas.getContext("2d");
+    this.mainMenu = new MainMenu_1.MainMenuState();
+  }
+
+  Instructions.prototype.initInstructions = function () {
+    this.clear();
+    this.ctx.fillStyle = "black";
+    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    this.getText();
+    this.handleText();
+  };
+
+  Instructions.prototype.getText = function () {
+    this.createText("INSTRUCTIONS", this.canvas.width / 2, 60, "center", "yellow", "30px Ariel");
+    this.createText("1. Move by arrows", 0, 100, "left", "white", "30px Ariel");
+    this.createText("X", this.canvas.width - 30, 60, "right", "red", "30px Ariel");
+  };
+
+  Instructions.prototype.handleText = function () {
+    var _this = this;
+
+    window.addEventListener("click", function (e) {
+      var width = _this.canvas.width;
+
+      var mousePos = _this.getMousePosition(_this.canvas, e);
+
+      if (mousePos.x >= width - 40 && mousePos.x <= width - 10 && mousePos.y >= 40 && mousePos.y <= 70) {
+        _this.clear();
+
+        _this.mainMenu.initMenu();
+      }
+    });
+  };
+
+  Instructions.prototype.getMousePosition = function (canvas, e) {
+    var rect = canvas.getBoundingClientRect();
+    return {
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top
+    };
+  };
+
+  Instructions.prototype.createText = function (text, x, y, align, color, font) {
+    this.ctx.fillStyle = color;
+    this.ctx.font = font;
+    this.ctx.textAlign = align;
+    this.ctx.fillText(text, x, y);
+  };
+
+  Instructions.prototype.clear = function () {
+    this.ctx.clearRect(0, 0, this.mainCanvas.canvas.width, this.mainCanvas.canvas.height);
+  };
+
+  return Instructions;
+}();
+
+exports.Instructions = Instructions;
+},{"../Game/CanvasInit":"Game/CanvasInit.ts","./MainMenu":"States/MainMenu.ts"}],"index.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -917,6 +1068,12 @@ var PacMan_1 = require("./Game/Characters/PacMan");
 
 var Ghost_1 = require("./Game/Characters/Ghost");
 
+var MainMenu_1 = require("./States/MainMenu");
+
+var Instructions_1 = require("./States/Instructions");
+
+var menu = new MainMenu_1.MainMenuState();
+var instructionsState = new Instructions_1.Instructions();
 var canvasInit = new CanvasInit_1.CanvasInit();
 var pacMan = new PacMan_1.PacMan(500, 500, 20, 10);
 var ghosts = [new Ghost_1.Ghost(500, 300, 60, 60, "/src/Assets/img/blinky.png"), new Ghost_1.Ghost(300, 300, 30, 30, "/src/Assets/img/pinky.png")];
@@ -932,8 +1089,15 @@ function start() {
   requestAnimationFrame(start);
 }
 
-start();
-},{"./Game/CanvasInit":"Game/CanvasInit.ts","./Game/Characters/PacMan":"Game/Characters/PacMan.ts","./Game/Characters/Ghost":"Game/Characters/Ghost.ts"}],"../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+exports.start = start;
+
+function instructions() {
+  instructionsState.initInstructions();
+}
+
+exports.instructions = instructions;
+menu.initMenu();
+},{"./Game/CanvasInit":"Game/CanvasInit.ts","./Game/Characters/PacMan":"Game/Characters/PacMan.ts","./Game/Characters/Ghost":"Game/Characters/Ghost.ts","./States/MainMenu":"States/MainMenu.ts","./States/Instructions":"States/Instructions.ts"}],"../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -961,7 +1125,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "45661" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "56196" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
