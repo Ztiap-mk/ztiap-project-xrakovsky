@@ -18,6 +18,7 @@ const ghosts: Ghost[] = [
 export let pacManCoor = pacMan.pacmanCoor;
 
 export function start() {
+    canvasInit.clearCanvas();
     canvasInit.start();
     pacMan.initPacman();
     ghosts.forEach(ghost => {

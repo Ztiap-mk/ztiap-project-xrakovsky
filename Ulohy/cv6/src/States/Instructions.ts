@@ -24,22 +24,14 @@ export class Instructions {
     private handleText() {
         window.addEventListener("click", (e) => {
             const width = this.canvas.width;
-            let mousePos = this.getMousePosition(this.canvas, e);
+            let mousePos = this.mainCanvas.getMousePosition(this.canvas, e);
             if(mousePos.x >= width - 40 && mousePos.x <= width - 10 && mousePos.y >= 40 && mousePos.y <= 70) {
                 this.clear()
                 this.mainMenu.initMenu();
             }
         });
     }
-
-    private getMousePosition(canvas: HTMLCanvasElement, e: MouseEvent) {
-        var rect = canvas.getBoundingClientRect();
-        return {
-        x: e.clientX - rect.left,
-        y: e.clientY - rect.top
-        };
-    }
-
+    
     private createText(text: string, x: number, y: number, align: CanvasTextAlign, color: string | CanvasGradient | CanvasPattern, font: string) {
         this.ctx.fillStyle = color;
         this.ctx.font = font;

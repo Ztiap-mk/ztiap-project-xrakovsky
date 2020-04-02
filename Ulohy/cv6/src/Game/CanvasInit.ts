@@ -28,4 +28,11 @@ export class CanvasInit {
         this.initCanvas();
     }
 
+    public getMousePosition(canvas: HTMLCanvasElement, e: MouseEvent) {
+        var rect = canvas.getBoundingClientRect();
+        return {
+            x: e.clientX - rect.left,
+            y: e.clientY - rect.top
+        };
+    }
 }

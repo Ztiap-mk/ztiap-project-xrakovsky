@@ -1,4 +1,6 @@
 import { CanvasInit } from "../CanvasInit";
+import { start } from "../../index";
+import { MainMenuState } from "../../States/MainMenu";
 
 export class PacMan {
     public x: number;
@@ -46,7 +48,7 @@ export class PacMan {
         }
     }
 
-    public get pacmanCoor() {
+    public get pacmanCoor(): {x: number; y: number} {
         let coor: { x: number, y: number } = {
             x: this.x,
             y: this.y,
@@ -54,7 +56,32 @@ export class PacMan {
         return coor;
     }
     
+    private isGameOver(): boolean {
+        let pacManCoor = this.pacmanCoor;
+        const { width, height } = this.mainCanvas.canvas
+        if(pacManCoor.x > width- this.radius || pacManCoor.y > height - this.radius || pacManCoor.x < this.radius || pacManCoor.y  < this.radius) {
+            this.mainCanvas.clearCanvas();
+            this.ctx.fillRect(0,0, width, height);
+            this.ctx.fillStyle = "white";
+            this.ctx.textAlign = "center";
+            this.ctx.fillText("Game Over", width / 2, height / 2);
+            this.ctx.fillText("Play Again", width / 2, height / 2 + 30);
 
+
+            
+            this.mainCanvas.canvas.addEventListener("click", (e: MouseEvent) => {
+                let mousePos = this.mainCanvas.getMousePosition(this.mainCanvas.canvas, e);
+                if(mousePos.x >= width / 2 - 60 && mousePos.x <= width /2 + 60 && mousePos.y >= height / 2 + 10 && mousePos.y <= height / 2 + 60) {
+                    this.mainCanvas.render();
+                    new MainMenuState().initMenu();
+                    return false;
+                }
+            });
+
+
+            return true;
+        } else return false;
+    }
 
     public async initPacman() {
         this.mainCanvas.render();
@@ -114,40 +141,42 @@ export class PacMan {
     }
 
     private update() {
-        this.x += this.speed.dx;
-        this.y += this.speed.dy;
-        this.mouthAnimation.update();
+        if(!this.isGameOver()) {
+            this.x += this.speed.dx;
+            this.y += this.speed.dy;
+            this.mouthAnimation.update();
+        }
     }
 
-    private move(code: string | number) {
-        if(code == 38 || code == "UP") {
-            this.direction = {
-                name: "UP", 
-                angle: Math.PI * 1.5
-            };
-            this.speed.dy = -this.speed.magnitude;
-            this.speed.dx = 0;
-        } else if (code == 37 || code == "LEFT") {
-            this.direction = {
-                name: "LEFT",
-                angle: Math.PI,
-            };
-            this.speed.dx = -this.speed.magnitude;
-            this.speed.dy = 0;
-        } else if (code == 40 || code == "DOWN") {
-            this.direction = {
-                name: "DOWN",
-                angle: Math.PI / 2,
-            };
-            this.speed.dx = 0;
-            this.speed.dy = this.speed.magnitude;
-        } else if (code == 39 || code == "RIGHT") {
-            this.direction = {
+    private async move(code: string | number) {
+            if(code == 38 || code == "UP") {
+                this.direction = {
+                    name: "UP", 
+                    angle: Math.PI * 1.5
+                };
+                this.speed.dy = -this.speed.magnitude;
+                this.speed.dx = 0;
+            } else if (code == 37 || code == "LEFT") {
+                this.direction = {
+                    name: "LEFT",
+                    angle: Math.PI,
+                };
+                this.speed.dx = -this.speed.magnitude;
+                this.speed.dy = 0;
+            } else if (code == 40 || code == "DOWN") {
+                this.direction = {
+                    name: "DOWN",
+                    angle: Math.PI / 2,
+                };
+                this.speed.dx = 0;
+                this.speed.dy = this.speed.magnitude;
+            } else if (code == 39 || code == "RIGHT") {
+                this.direction = {
                 name: "RIGHT",
                 angle: 0
             }
-            this.speed.dx = this.speed.magnitude;
-            this.speed.dy = 0;
+                this.speed.dx = this.speed.magnitude;
+                this.speed.dy = 0;
         } else if (code == 71) {
             this.stop();
         }

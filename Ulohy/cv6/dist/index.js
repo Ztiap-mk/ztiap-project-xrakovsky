@@ -302,11 +302,88 @@ function () {
     this.initCanvas();
   };
 
+  CanvasInit.prototype.getMousePosition = function (canvas, e) {
+    var rect = canvas.getBoundingClientRect();
+    return {
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top
+    };
+  };
+
   return CanvasInit;
 }();
 
 exports.CanvasInit = CanvasInit;
-},{}],"Game/Characters/PacMan.ts":[function(require,module,exports) {
+},{}],"States/MainMenu.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var CanvasInit_1 = require("../Game/CanvasInit");
+
+var __1 = require("..");
+
+var MainMenuState =
+/** @class */
+function () {
+  function MainMenuState() {
+    this.mainCanvas = new CanvasInit_1.CanvasInit();
+    this.canvas = this.mainCanvas.canvas;
+    this.ctx = this.mainCanvas.canvas.getContext("2d");
+  }
+
+  MainMenuState.prototype.initMenu = function () {
+    this.clear();
+    this.ctx.fillStyle = "black";
+    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    this.getText();
+    this.handleText();
+  };
+
+  MainMenuState.prototype.getText = function () {
+    this.createText("Start Game", this.canvas.width / 2, this.canvas.height / 2, "center", "yellow", "30px Ariel");
+    this.createText("Instructions", this.canvas.width / 2, this.canvas.height / 2 + 50, "center", "white", "30px Ariel");
+  };
+
+  MainMenuState.prototype.handleText = function () {
+    var _this = this;
+
+    window.addEventListener("click", function (e) {
+      var width = _this.canvas.width / 2;
+      var height = _this.canvas.height / 2;
+
+      var mousePos = _this.mainCanvas.getMousePosition(_this.canvas, e);
+
+      if (mousePos.x >= width - 60 && mousePos.x <= width + 60 && mousePos.y >= height - 20 && mousePos.y <= height) {
+        _this.clear();
+
+        __1.start();
+      } else if (mousePos.x >= width - 60 && mousePos.x <= width + 60 && mousePos.y >= height + 20 && mousePos.y <= height + 60) {
+        _this.clear();
+
+        __1.instructions();
+      }
+    });
+  };
+
+  MainMenuState.prototype.createText = function (text, x, y, align, color, font) {
+    this.ctx.fillStyle = color;
+    this.ctx.font = font;
+    this.ctx.textAlign = align;
+    this.ctx.fillText(text, x, y);
+  };
+
+  MainMenuState.prototype.clear = function () {
+    this.ctx.clearRect(0, 0, this.mainCanvas.canvas.width, this.mainCanvas.canvas.height);
+  };
+
+  return MainMenuState;
+}();
+
+exports.MainMenuState = MainMenuState;
+},{"../Game/CanvasInit":"Game/CanvasInit.ts","..":"index.ts"}],"Game/Characters/PacMan.ts":[function(require,module,exports) {
 "use strict";
 
 var __awaiter = this && this.__awaiter || function (thisArg, _arguments, P, generator) {
@@ -458,6 +535,8 @@ Object.defineProperty(exports, "__esModule", {
 
 var CanvasInit_1 = require("../CanvasInit");
 
+var MainMenu_1 = require("../../States/MainMenu");
+
 var PacMan =
 /** @class */
 function () {
@@ -506,6 +585,35 @@ function () {
     enumerable: true,
     configurable: true
   });
+
+  PacMan.prototype.isGameOver = function () {
+    var _this = this;
+
+    var pacManCoor = this.pacmanCoor;
+    var _a = this.mainCanvas.canvas,
+        width = _a.width,
+        height = _a.height;
+
+    if (pacManCoor.x > width - this.radius || pacManCoor.y > height - this.radius || pacManCoor.x < this.radius || pacManCoor.y < this.radius) {
+      this.mainCanvas.clearCanvas();
+      this.ctx.fillRect(0, 0, width, height);
+      this.ctx.fillStyle = "white";
+      this.ctx.textAlign = "center";
+      this.ctx.fillText("Game Over", width / 2, height / 2);
+      this.ctx.fillText("Play Again", width / 2, height / 2 + 30);
+      this.mainCanvas.canvas.addEventListener("click", function (e) {
+        var mousePos = _this.mainCanvas.getMousePosition(_this.mainCanvas.canvas, e);
+
+        if (mousePos.x >= width / 2 - 60 && mousePos.x <= width / 2 + 60 && mousePos.y >= height / 2 + 10 && mousePos.y <= height / 2 + 60) {
+          _this.mainCanvas.render();
+
+          new MainMenu_1.MainMenuState().initMenu();
+          return false;
+        }
+      });
+      return true;
+    } else return false;
+  };
 
   PacMan.prototype.initPacman = function () {
     return __awaiter(this, void 0, void 0, function () {
@@ -598,50 +706,60 @@ function () {
   };
 
   PacMan.prototype.update = function () {
-    this.x += this.speed.dx;
-    this.y += this.speed.dy;
-    this.mouthAnimation.update();
+    if (!this.isGameOver()) {
+      this.x += this.speed.dx;
+      this.y += this.speed.dy;
+      this.mouthAnimation.update();
+    }
   };
 
   PacMan.prototype.move = function (code) {
-    if (code == 38 || code == "UP") {
-      this.direction = {
-        name: "UP",
-        angle: Math.PI * 1.5
-      };
-      this.speed.dy = -this.speed.magnitude;
-      this.speed.dx = 0;
-    } else if (code == 37 || code == "LEFT") {
-      this.direction = {
-        name: "LEFT",
-        angle: Math.PI
-      };
-      this.speed.dx = -this.speed.magnitude;
-      this.speed.dy = 0;
-    } else if (code == 40 || code == "DOWN") {
-      this.direction = {
-        name: "DOWN",
-        angle: Math.PI / 2
-      };
-      this.speed.dx = 0;
-      this.speed.dy = this.speed.magnitude;
-    } else if (code == 39 || code == "RIGHT") {
-      this.direction = {
-        name: "RIGHT",
-        angle: 0
-      };
-      this.speed.dx = this.speed.magnitude;
-      this.speed.dy = 0;
-    } else if (code == 71) {
-      this.stop();
-    }
+    return __awaiter(this, void 0, void 0, function () {
+      return __generator(this, function (_a) {
+        if (code == 38 || code == "UP") {
+          this.direction = {
+            name: "UP",
+            angle: Math.PI * 1.5
+          };
+          this.speed.dy = -this.speed.magnitude;
+          this.speed.dx = 0;
+        } else if (code == 37 || code == "LEFT") {
+          this.direction = {
+            name: "LEFT",
+            angle: Math.PI
+          };
+          this.speed.dx = -this.speed.magnitude;
+          this.speed.dy = 0;
+        } else if (code == 40 || code == "DOWN") {
+          this.direction = {
+            name: "DOWN",
+            angle: Math.PI / 2
+          };
+          this.speed.dx = 0;
+          this.speed.dy = this.speed.magnitude;
+        } else if (code == 39 || code == "RIGHT") {
+          this.direction = {
+            name: "RIGHT",
+            angle: 0
+          };
+          this.speed.dx = this.speed.magnitude;
+          this.speed.dy = 0;
+        } else if (code == 71) {
+          this.stop();
+        }
+
+        return [2
+        /*return*/
+        ];
+      });
+    });
   };
 
   return PacMan;
 }();
 
 exports.PacMan = PacMan;
-},{"../CanvasInit":"Game/CanvasInit.ts"}],"Game/Characters/Ghost.ts":[function(require,module,exports) {
+},{"../CanvasInit":"Game/CanvasInit.ts","../../States/MainMenu":"States/MainMenu.ts"}],"Game/Characters/Ghost.ts":[function(require,module,exports) {
 "use strict";
 
 var __awaiter = this && this.__awaiter || function (thisArg, _arguments, P, generator) {
@@ -904,84 +1022,7 @@ function () {
 }();
 
 exports.Ghost = Ghost;
-},{"../CanvasInit":"Game/CanvasInit.ts","../../index":"index.ts"}],"States/MainMenu.ts":[function(require,module,exports) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var CanvasInit_1 = require("../Game/CanvasInit");
-
-var __1 = require("..");
-
-var MainMenuState =
-/** @class */
-function () {
-  function MainMenuState() {
-    this.mainCanvas = new CanvasInit_1.CanvasInit();
-    this.canvas = this.mainCanvas.canvas;
-    this.ctx = this.mainCanvas.canvas.getContext("2d");
-  }
-
-  MainMenuState.prototype.initMenu = function () {
-    this.clear();
-    this.ctx.fillStyle = "black";
-    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-    this.getText();
-    this.handleText();
-  };
-
-  MainMenuState.prototype.getText = function () {
-    this.createText("Start Game", this.canvas.width / 2, this.canvas.height / 2, "center", "yellow", "30px Ariel");
-    this.createText("Instructions", this.canvas.width / 2, this.canvas.height / 2 + 50, "center", "white", "30px Ariel");
-  };
-
-  MainMenuState.prototype.handleText = function () {
-    var _this = this;
-
-    window.addEventListener("click", function (e) {
-      var width = _this.canvas.width / 2;
-      var height = _this.canvas.height / 2;
-
-      var mousePos = _this.getMousePosition(_this.canvas, e);
-
-      if (mousePos.x >= width - 60 && mousePos.x <= width + 60 && mousePos.y >= height - 20 && mousePos.y <= height) {
-        _this.clear();
-
-        __1.start();
-      } else if (mousePos.x >= width - 60 && mousePos.x <= width + 60 && mousePos.y >= height + 20 && mousePos.y <= height + 60) {
-        _this.clear();
-
-        __1.instructions();
-      }
-    });
-  };
-
-  MainMenuState.prototype.getMousePosition = function (canvas, e) {
-    var rect = canvas.getBoundingClientRect();
-    return {
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top
-    };
-  };
-
-  MainMenuState.prototype.createText = function (text, x, y, align, color, font) {
-    this.ctx.fillStyle = color;
-    this.ctx.font = font;
-    this.ctx.textAlign = align;
-    this.ctx.fillText(text, x, y);
-  };
-
-  MainMenuState.prototype.clear = function () {
-    this.ctx.clearRect(0, 0, this.mainCanvas.canvas.width, this.mainCanvas.canvas.height);
-  };
-
-  return MainMenuState;
-}();
-
-exports.MainMenuState = MainMenuState;
-},{"../Game/CanvasInit":"Game/CanvasInit.ts","..":"index.ts"}],"States/Instructions.ts":[function(require,module,exports) {
+},{"../CanvasInit":"Game/CanvasInit.ts","../../index":"index.ts"}],"States/Instructions.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1022,7 +1063,7 @@ function () {
     window.addEventListener("click", function (e) {
       var width = _this.canvas.width;
 
-      var mousePos = _this.getMousePosition(_this.canvas, e);
+      var mousePos = _this.mainCanvas.getMousePosition(_this.canvas, e);
 
       if (mousePos.x >= width - 40 && mousePos.x <= width - 10 && mousePos.y >= 40 && mousePos.y <= 70) {
         _this.clear();
@@ -1030,14 +1071,6 @@ function () {
         _this.mainMenu.initMenu();
       }
     });
-  };
-
-  Instructions.prototype.getMousePosition = function (canvas, e) {
-    var rect = canvas.getBoundingClientRect();
-    return {
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top
-    };
   };
 
   Instructions.prototype.createText = function (text, x, y, align, color, font) {
@@ -1080,6 +1113,7 @@ var ghosts = [new Ghost_1.Ghost(500, 300, 60, 60, "/src/Assets/img/blinky.png"),
 exports.pacManCoor = pacMan.pacmanCoor;
 
 function start() {
+  canvasInit.clearCanvas();
   canvasInit.start();
   pacMan.initPacman();
   ghosts.forEach(function (ghost) {
@@ -1125,7 +1159,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "56196" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "50720" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
