@@ -25,6 +25,11 @@ export class Game {
         this.renderLoop();
     }
 
+    public clear() {
+        this.ctx.fillStyle = "black";
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    }
+
     private initEvents() {
         this.canvas.addEventListener("click", (e) => {
             this.handleEvent(e);
@@ -36,11 +41,6 @@ export class Game {
         this.stateManager.render();
     }
 
-    public clear() {
-        this.ctx.fillStyle = "black";
-        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-    }
-
     private renderLoop() {
         this.time = Date.now();
         this.step();
@@ -50,7 +50,7 @@ export class Game {
         //const now = Date.now()
         //const dt = (now - this.time) / 100;
         //this.time = now;
-        
+
         this.render();
         //console.log(this.stateManager._currentState);
         requestAnimationFrame(() => this.step());

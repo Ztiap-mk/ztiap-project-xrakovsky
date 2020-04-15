@@ -5,6 +5,10 @@ let muted: boolean = false;
 
 
 class Sounds {
+    public get _muted() {
+        return muted;
+    }
+
     public playSound(name: string) {
         this.stop();
         playingSound = resourceManager.getSound(name);
@@ -15,7 +19,7 @@ class Sounds {
     }
 
     public stop() {
-        if(playingSound) {
+        if (playingSound) {
             playingSound.currentTime = 0;
             playingSound.pause();
         }
@@ -25,10 +29,6 @@ class Sounds {
         muted = muted == false;
 
         playingSound.muted = muted;
-    }
-
-    public get _muted() {
-        return muted;
     }
 
 }

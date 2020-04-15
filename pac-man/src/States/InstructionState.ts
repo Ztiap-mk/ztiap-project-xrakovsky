@@ -6,11 +6,13 @@ export class InstructionState {
     protected objects: TextObj[] = [];
     protected ctx: CanvasRenderingContext2D;
     protected canvas: HTMLCanvasElement;
+
     constructor(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
-       this.canvas = canvas;
-       this.ctx = ctx;
-        
+        this.canvas = canvas;
+        this.ctx = ctx;
+
     }
+
     public init() {
         const close = new TextObj(this.canvas.width - 30, 10, 50, 30, "X", 30, "red", "start");
         close.onClick(() => this.stateManager.changeState("mainMenu"));
@@ -23,10 +25,10 @@ export class InstructionState {
             new TextObj(100, 220, 300, 30, "4. Veľké biele bodky sú power-ups", 20, "white", "left"),
             new TextObj(100, 260, 300, 30, "5. Ovocie pridáva extra body", 20, "white", "left"),
             new TextObj(100, 300, 300, 30, "6. Have fun!", 20, "white", "left"),
-            close            
+            close
         ];
         this.render();
-    } 
+    }
 
     public deInit() {
         this.ctx.fillStyle = "black";

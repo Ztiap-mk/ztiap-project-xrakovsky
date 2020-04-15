@@ -1,4 +1,4 @@
-import { TextObj, ImageObj, WallObj } from "../Objects";
+import { ImageObj, TextObj, WallObj } from "../Objects";
 import { StateManager } from "./StateManager";
 import { Game } from "../game";
 import { resourceManager } from "../resources";
@@ -8,14 +8,16 @@ export class GameState {
     protected textObjects: TextObj[] = [];
     protected characterObjects: ImageObj[] = [];
     protected wallObjects: WallObj[] = [];
-    protected stateManager: StateManager = new StateManager(); 
+    protected stateManager: StateManager = new StateManager();
     protected game = new Game();
     protected canvas: HTMLCanvasElement;
     protected ctx: CanvasRenderingContext2D;
+
     constructor(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
         this.canvas = canvas;
         this.ctx = ctx;
     }
+
     public init() {
         const score = new TextObj(50, 10, 200, 20, "Score: 0", 20, "white", "start");
         const highScore = new TextObj(this.canvas.width / 2 - 20, 10, 200, 20, "High Score: 0", 20, "white", "start");
@@ -34,12 +36,12 @@ export class GameState {
         });
 
         gameOverScreen.onClick(() => {
-           this.stateManager.changeState("gameOver");
-           soundManager.playSound("death");
+            this.stateManager.changeState("gameOver");
+            soundManager.playSound("death");
         });
 
         this.textObjects = [
-            score, 
+            score,
             highScore,
             soundToggle,
             gameOverScreen,
@@ -73,7 +75,7 @@ export class GameState {
         ];
 
         this.render();
-    } 
+    }
 
     public deInit() {
         this.game.clear();
@@ -83,9 +85,9 @@ export class GameState {
         this.wallObjects.forEach(obj => obj.render(this.ctx));
         this.textObjects.forEach(obj => obj.render(this.ctx));
         this.characterObjects.forEach(obj => obj.render(this.ctx));
-        
+
     }
-    
+
     public handleEvent(ev: MouseEvent) {
         this.textObjects.forEach(obj => obj.handleEvent(ev));
     }

@@ -7,6 +7,10 @@ let STATES: { mainMenu: any; instructions: any; gameState: any; gameOver: any; }
 let currentState: { init: () => void; deInit: () => void; handleEvent: (arg0: MouseEvent) => void; render: () => void; }
 
 export class StateManager {
+    public get _currentState() {
+        return currentState;
+    }
+
     public initStates(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
 
         STATES = {
@@ -19,14 +23,10 @@ export class StateManager {
         currentState.init();
     }
 
-    public get _currentState() {
-        return currentState;
-    }
-
     public changeState(state: string) {
         const newState = STATES[state];
 
-        if(!newState) throw new Error("State " + state + " not found ");
+        if (!newState) throw new Error("State " + state + " not found ");
         currentState.deInit();
         currentState = newState;
         currentState.init();
