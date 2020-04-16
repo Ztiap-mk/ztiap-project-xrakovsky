@@ -15,6 +15,17 @@ export class Objects {
         const {x, y, width, height} = this;
         ctx.fillRect(x, y, width, height);
     }
+
+    protected isClicked(event: MouseEvent) {
+        if (event.type === "click") {
+            const mouseX = event.offsetX;
+            const mouseY = event.offsetY;
+            if (mouseX >= this.x && mouseX <= this.x + this.width && mouseY >= this.y && mouseY <= this.y + this.height) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
 
 export class TextObj extends Objects {
@@ -54,17 +65,6 @@ export class TextObj extends Objects {
     public onClick(func: any) {
         this.onClickHandler = func;
     }
-
-    private isClicked(event: MouseEvent) {
-        if (event.type === "click") {
-            const mouseX = event.offsetX;
-            const mouseY = event.offsetY;
-            if (mouseX >= this.x && mouseX <= this.x + this.width && mouseY >= this.y && mouseY <= this.y + this.height) {
-                return true;
-            }
-        }
-        return false;
-    }
 }
 
 export class ImageObj extends Objects {
@@ -90,17 +90,6 @@ export class ImageObj extends Objects {
 
     public onClick(func: any) {
         this.onClickHandler = func;
-    }
-
-    private isClicked(event: MouseEvent) {
-        if (event.type === "click") {
-            const mouseX = event.offsetX;
-            const mouseY = event.offsetY;
-            if (mouseX >= this.x && mouseX <= this.x + this.width && mouseY >= this.y && mouseY <= this.y + this.height) {
-                return true;
-            }
-        }
-        return false;
     }
 }
 
