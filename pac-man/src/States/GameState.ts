@@ -3,6 +3,7 @@ import { StateManager } from "./StateManager";
 import { Game } from "../game";
 import { resourceManager } from "../resources";
 import { soundManager } from "../sounds";
+import {PacMan} from "../pacMan";
 
 export class GameState {
     protected textObjects: TextObj[] = [];
@@ -12,6 +13,7 @@ export class GameState {
     protected game = new Game();
     protected canvas: HTMLCanvasElement;
     protected ctx: CanvasRenderingContext2D;
+    public pacMan: PacMan;
 
     constructor(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
         this.canvas = canvas;
@@ -24,7 +26,7 @@ export class GameState {
         const blinky = new ImageObj(this.canvas.width / 2, 225, 30, 30, resourceManager.getImage("blinky"));
         const pinky = new ImageObj(this.canvas.width / 2 - 65, 300, 30, 30, resourceManager.getImage("pinky"));
         const clyde = new ImageObj(this.canvas.width / 2, 300, 30, 30, resourceManager.getImage("clyde"));
-        const pacman = new ImageObj(this.canvas.width / 2, 415, 30, 30, resourceManager.getImage("pacman"));
+        const pacman = new PacMan(this.canvas.width / 2, 415, 30, 30, 15);
         const inky = new ImageObj(this.canvas.width / 2 + 60, 300, 30, 30, resourceManager.getImage("inky"));
         const dock = new WallObj(this.canvas.width / 2 - 70, this.canvas.height / 2 - 10, 170, 100);
         const pacman_lives_1 = new ImageObj(50, this.canvas.height - 45, 20, 20, resourceManager.getImage("pacman"));
@@ -52,7 +54,6 @@ export class GameState {
             pinky,
             clyde,
             inky,
-            pacman,
             pacman_lives_1,
             pacman_lives_2
         ];
@@ -74,6 +75,8 @@ export class GameState {
             new WallObj(this.canvas.width - 190, 200, 20, 240)
         ];
 
+        this.pacMan = pacman;
+
         this.render();
     }
 
@@ -85,10 +88,35 @@ export class GameState {
         this.wallObjects.forEach(obj => obj.render(this.ctx));
         this.textObjects.forEach(obj => obj.render(this.ctx));
         this.characterObjects.forEach(obj => obj.render(this.ctx));
-
+        this.pacMan.render(this.ctx);
+        this.wallObjects.forEach(obj => this.wallCollision(this.pacMan, obj));
     }
 
-    public handleEvent(ev: MouseEvent) {
+    public wallCollision(pacman: PacMan, wall: WallObj) {
+
+        const dx = (pacman._coor.x  + pacman._coor.width / 2) - (wall._coor.x + wall._coor.width / 2);
+        const dy = (pacman._coor.y + pacman._coor.height / 2) - (wall._coor.y + wall._coor.height /2)
+        const width = (pacman._coor.width + wall._coor.width) / 2;
+        const height = (pacman._coor.height + wall._coor.height) /2;
+        const crossWidth = width * dy;
+        const crossHeight = height * dx;
+
+        if(Math.abs(dx) <= width && Math.abs(dy) <= height){
+            if(crossWidth > crossHeight) {
+                if(crossWidth > - crossHeight) {
+                    pacman.stop();
+                } else{
+                    pacman.stop();
+                }
+            } else {
+                if(crossWidth > -crossHeight) {
+                    pacman.stop();
+                } else pacman.stop();
+            }
+        }
+    }
+
+    public handleEvent(ev: any) {
         this.textObjects.forEach(obj => obj.handleEvent(ev));
     }
 

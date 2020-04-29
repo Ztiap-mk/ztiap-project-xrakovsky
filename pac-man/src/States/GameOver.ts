@@ -16,7 +16,12 @@ export class GameOver {
     }
 
     public init() {
-        const play = new TextObj(this.canvas.width / 2 - 50, this.canvas.height / 2 + 40, 200, 40, "Play Again", 30, "white", "left");
+        const play = new TextObj(this.canvas.width / 2 - 50, this.canvas.height / 2 + 90, 200, 40, "Play Again", 30, "white", "left");
+        const main = new TextObj(this.canvas.width / 2 - 50, this.canvas.height / 2 + 40, 200, 40, "Main Menu", 30, "white", "left");
+        main.onClick(() => {
+            soundManager.stop();
+            this.stateManager.changeState("mainMenu");
+        })
         play.onClick(() => {
             soundManager.playSound("intro");
             this.stateManager.changeState("gameState");
@@ -24,7 +29,7 @@ export class GameOver {
 
         this.objects = [
             new TextObj(this.canvas.width / 2 - 50, this.canvas.height / 2, 200, 40, "Game Over", 60, "yellow", "left"),
-            play
+            play, main
         ];
         this.render();
     }

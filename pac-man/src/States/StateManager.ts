@@ -32,7 +32,7 @@ export class StateManager {
         currentState.init();
     }
 
-    public handleEvent(ev: MouseEvent) {
+    public handleEvent(ev: any) {
         currentState.handleEvent(ev);
     }
 

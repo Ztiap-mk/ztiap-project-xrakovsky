@@ -98,6 +98,15 @@ export class WallObj extends Objects {
         super(x, y, width, height)
     }
 
+    get _coor() {
+        return {
+            x: this.x,
+            y: this.y,
+            width: this.width,
+            height: this.height
+        }
+    }
+
     public render(ctx: CanvasRenderingContext2D) {
         ctx.fillStyle = "black";
         ctx.fillRect(this.x, this.y, this.width, this.height);

@@ -1,12 +1,11 @@
-import { StateManager } from "./States/StateManager";
-import { resourceManager } from "./resources";
+import {StateManager} from "./States/StateManager";
+import {resourceManager} from "./resources";
 
 export class Game {
     canvas: HTMLCanvasElement;
     ctx: CanvasRenderingContext2D;
     protected time: number;
     protected stateManager: StateManager = new StateManager();
-
     constructor() {
         this.canvas = document.getElementById("canvas") as HTMLCanvasElement;
         this.ctx = this.canvas.getContext("2d");
@@ -34,6 +33,7 @@ export class Game {
         this.canvas.addEventListener("click", (e) => {
             this.handleEvent(e);
         });
+        this.canvas.addEventListener("keydown", (ev) => this.handleEvent(ev));
     }
 
     private render() {
@@ -56,7 +56,7 @@ export class Game {
         requestAnimationFrame(() => this.step());
     }
 
-    private handleEvent(e: MouseEvent) {
+    private handleEvent(e: any) {
         this.stateManager.handleEvent(e);
     }
 }
